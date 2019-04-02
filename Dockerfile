@@ -1,6 +1,6 @@
 FROM jupyter/scipy-notebook
 
-USER $NB_USER
+USER akhil
 
 # install TensorFlow
 RUN conda install --quiet --yes 'tensorflow=1.0*'
