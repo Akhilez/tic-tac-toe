@@ -5,7 +5,7 @@ from NeuralNetworks.TicTacToe.players.convolutional import ConvolutionalPlayer
 from NeuralNetworks.TicTacToe.players.dense import DenseNetworkPlayer
 from NeuralNetworks.TicTacToe.players.human import HumanPlayer
 from NeuralNetworks.TicTacToe.players.random import RandomPlayer
-from NeuralNetworks.TicTacToe.players.static import StaticPlayer
+from NeuralNetworks.TicTacToe.players.static import PerfectPlayer
 
 
 class TicTacToe:
@@ -32,8 +32,9 @@ class TicTacToe:
     def create_automated_game(type_1, type_2, num_matches=1):
         game = TicTacToe.create_game(type_1, type_1, type_2, type_2, Frame.O)
         game.start(num_matches)
-        with DataManager() as data_manager:
-            data_manager.data = game.matches
+        data_manager = DataManager()
+        data_manager.data = game.matches
+        data_manager.write()
 
     @staticmethod
     def read_character():
@@ -62,8 +63,8 @@ class TicTacToe:
             return RandomPlayer(player_name, player_character)
         if player_type == DenseNetworkPlayer.TYPE:
             return DenseNetworkPlayer(player_name, player_character)
-        if player_type == StaticPlayer.TYPE:
-            return StaticPlayer(player_name, player_character)
+        if player_type == PerfectPlayer.TYPE:
+            return PerfectPlayer(player_name, player_character)
         if player_type == ConvolutionalPlayer.TYPE:
             return ConvolutionalPlayer(player_name, player_character)
         raise Exception(f"Player type {player_type} not found!")
@@ -80,14 +81,14 @@ class TicTacToe:
     @staticmethod
     def keep_dense_learning():
 
-        buffer_size = 1000
+        buffer_size = 100
 
         game = Game(
-            ConvolutionalPlayer('Conv_1', Frame.X),
-            # DenseNetworkPlayer('Dense_1', Frame.X),
+            # ConvolutionalPlayer('Conv_1', Frame.X),
+            DenseNetworkPlayer('Dense_1', Frame.X),
             # DenseNetworkPlayer('Dense_1', Frame.O)
-            RandomPlayer('Random', Frame.O)
-            # StaticPlayer('Static', Frame.O)
+            # RandomPlayer('Random', Frame.O)
+            PerfectPlayer('Static', Frame.O)
             # HumanPlayer('Human', Frame.O)
         )
 
@@ -95,11 +96,10 @@ class TicTacToe:
 
         dense_player = game.player_1
 
-        for i in range(1000):
+        for i in range(500):
             game.start(1)
-            # if game.current_match.winner is not None:
             data_manager.enqueue(game.matches)
-            dense_player.model.train(15, data_manager)
+            dense_player.model.train(100, data_manager)
             game.matches.clear()
             game.swap_players()
 

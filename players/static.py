@@ -4,7 +4,7 @@ from NeuralNetworks.TicTacToe.players import Player
 from NeuralNetworks.TicTacToe.players.random import RandomPlayer
 
 
-class StaticPlayer(Player):
+class PerfectPlayer(Player):
 
     TYPE = 'static'
 

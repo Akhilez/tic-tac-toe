@@ -75,7 +75,7 @@ class Frame:
 
     @staticmethod
     def categorize_inputs(my_list):
-        categories = {None: [0, 0], 'X': [1, 0], 'O': [0, 1]}
+        categories = {None: [0, 0, 1], 'X': [1, 0, 0], 'O': [0, 1, 0]}
         all_list = []
         for frame in my_list:
             category_list = []

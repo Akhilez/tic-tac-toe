@@ -1,7 +1,11 @@
 import os
+from time import time
 
 import numpy as np
 from sklearn.model_selection import train_test_split
+from keras.models import Sequential
+from keras.layers import Dense, Dropout, BatchNormalization
+from keras.callbacks import TensorBoard
 
 from NeuralNetworks.TicTacToe.framework.data_manager import DataManager
 from NeuralNetworks.TicTacToe.framework.frame import Frame
@@ -25,13 +29,13 @@ class DenseModel:
         if os.path.exists(self.model_path):
             from keras.models import load_model
             model = load_model(self.model_path)
-            print("model found at "+self.model_path)
+            print("model found at " + self.model_path)
         else:
             print("model not found!")
-            from keras.models import Sequential
-            from keras.layers import Dense
             model = Sequential()
-            model.add(Dense(9, activation='relu', input_shape=(18,)))
+            model.add(Dense(27, activation='relu', input_shape=(27,)))
+            model.add(Dense(252, activation='relu'))
+            model.add(Dense(72, activation='relu'))
             model.add(Dense(9, activation='softmax'))
         model.compile(loss='mean_squared_error', optimizer='Adam', metrics=['accuracy'])
         return model
@@ -46,7 +50,7 @@ class DenseModel:
                 inputs.append(Frame.categorize_inputs(insert['frame']))
                 outputs.append(insert['position'])
         outputs = np.array(Frame.categorize_outputs(outputs))
-        inputs = np.array(inputs).reshape(len(inputs), 18)
+        inputs = np.array(inputs).reshape(len(inputs), 27)
 
         return train_test_split(inputs, outputs, test_size=0.2)
 

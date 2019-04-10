@@ -14,7 +14,7 @@ class DenseNetworkPlayer(Player):
 
     def get_positions(self, frame):
         frame = frame.matrix if self.character == Frame.X else Frame.flip(frame.matrix)
-        processed_frame = np.array([Frame.categorize_inputs(frame)]).reshape(1, 18)
+        processed_frame = np.array([Frame.categorize_inputs(frame)]).reshape(1, 27)
         output = self.model.model.predict(processed_frame)[0]
         output = self.get_max(output, frame)
         return [int(output // 3), int(output % 3)]
