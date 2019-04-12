@@ -1,11 +1,11 @@
-from NeuralNetworks.TicTacToe.framework.data_manager import DataManager
-from NeuralNetworks.TicTacToe.framework.frame import Frame
-from NeuralNetworks.TicTacToe.framework.game import Game
-from NeuralNetworks.TicTacToe.players.convolutional import ConvolutionalPlayer
-from NeuralNetworks.TicTacToe.players.dense import DenseNetworkPlayer
-from NeuralNetworks.TicTacToe.players.human import HumanPlayer
-from NeuralNetworks.TicTacToe.players.random import RandomPlayer
-from NeuralNetworks.TicTacToe.players.static import PerfectPlayer
+from framework.data_manager import DataManager
+from framework.frame import Frame
+from framework.game import Game
+from players.convolutional import ConvolutionalPlayer
+from players.dense import DenseNetworkPlayer
+from players.human import HumanPlayer
+from players.random import RandomPlayer
+from players.static import PerfectPlayer
 
 
 class TicTacToe:
@@ -96,7 +96,7 @@ class TicTacToe:
 
         dense_player = game.player_1
 
-        for i in range(500):
+        for i in range(100):
             game.start(1)
             data_manager.enqueue(game.matches)
             dense_player.model.train(100, data_manager)

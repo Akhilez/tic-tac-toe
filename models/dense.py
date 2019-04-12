@@ -7,8 +7,8 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, BatchNormalization
 from keras.callbacks import TensorBoard
 
-from NeuralNetworks.TicTacToe.framework.data_manager import DataManager
-from NeuralNetworks.TicTacToe.framework.frame import Frame
+from framework.data_manager import DataManager
+from framework.frame import Frame
 
 
 class DenseModel:
@@ -32,11 +32,12 @@ class DenseModel:
             print("model found at " + self.model_path)
         else:
             print("model not found!")
+            import keras
+            weight_constraint = keras.constraints.MinMaxNorm(min_value=0.0, max_value=1.0, rate=1.0, axis=0)
             model = Sequential()
-            model.add(Dense(27, activation='relu', input_shape=(27,)))
-            model.add(Dense(252, activation='relu'))
-            model.add(Dense(72, activation='relu'))
-            model.add(Dense(9, activation='softmax'))
+            # model.add(Dense(252, activation='relu', use_bias=False, input_shape=(27,)))
+            # model.add(Dense(72, activation='relu', use_bias=False))
+            model.add(Dense(9, activation='softmax', use_bias=False, input_shape=(27,)))
         model.compile(loss='mean_squared_error', optimizer='Adam', metrics=['accuracy'])
         return model
 

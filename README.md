@@ -27,5 +27,14 @@ In my initial design, I trained for all the insertions of the player who wins th
 
 There next design was to let perfect player and ann play and train for 1000 matches. Now the winner's insertions are perfect, so my model shall train on the best data. Then I would play against a random player and check if my model made progress.
 
+##### Inputs Format
+    x    = (1, 0, 0)
+    o    = (0, 1, 0)
+    None = (0, 0, 1)
+
 ##### Model design:
-...
+pending
+
+TODO
+  - Focus on parsing the weights from output to inputs.
+  - Consider negative weights
