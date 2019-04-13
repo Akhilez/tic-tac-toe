@@ -3,8 +3,8 @@ from keras.layers import Conv2D, BatchNormalization, Flatten
 from sklearn.model_selection import train_test_split
 import os
 
-from NeuralNetworks.TicTacToe.framework.data_manager import DataManager
-from NeuralNetworks.TicTacToe.framework.frame import Frame
+from framework.data_manager import DataManager
+from framework.frame import Frame
 
 
 class ConvolutionalModel:

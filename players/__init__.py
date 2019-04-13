@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 
-from NeuralNetworks.TicTacToe.framework.frame import Frame
+from framework.frame import Frame
 
 
 class Player(metaclass=ABCMeta):

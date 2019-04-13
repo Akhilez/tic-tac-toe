@@ -1,7 +1,7 @@
 import numpy as np
-from NeuralNetworks.TicTacToe.players import Player
-from NeuralNetworks.TicTacToe.framework.frame import Frame
-from NeuralNetworks.TicTacToe.models.dense import DenseModel
+from players import Player
+from framework.frame import Frame
+from models.dense import DenseModel
 
 
 class DenseNetworkPlayer(Player):

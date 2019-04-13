@@ -1,7 +1,7 @@
-from NeuralNetworks.TicTacToe.framework.frame import Frame
-from NeuralNetworks.TicTacToe.framework.match import Match
-from NeuralNetworks.TicTacToe.players import Player
-from NeuralNetworks.TicTacToe.players.random import RandomPlayer
+from framework.frame import Frame
+from framework.match import Match
+from players import Player
+from players.random import RandomPlayer
 
 
 class PerfectPlayer(Player):

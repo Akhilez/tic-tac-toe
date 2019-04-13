@@ -1,4 +1,4 @@
-from NeuralNetworks.TicTacToe.framework.match import Match
+from framework.match import Match
 
 
 class Game:

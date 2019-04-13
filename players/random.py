@@ -1,6 +1,6 @@
 import random
 
-from NeuralNetworks.TicTacToe.players import Player
+from players import Player
 
 
 class RandomPlayer(Player):

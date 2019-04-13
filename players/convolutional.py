@@ -1,9 +1,9 @@
 import numpy as np
 
-from NeuralNetworks.TicTacToe.framework.frame import Frame
-from NeuralNetworks.TicTacToe.models.convolutional import ConvolutionalModel
-from NeuralNetworks.TicTacToe.players import Player
-from NeuralNetworks.TicTacToe.players.dense import DenseNetworkPlayer
+from framework.frame import Frame
+from models.convolutional import ConvolutionalModel
+from players import Player
+from players.dense import DenseNetworkPlayer
 
 
 class ConvolutionalPlayer(Player):

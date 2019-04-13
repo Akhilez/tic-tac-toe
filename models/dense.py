@@ -35,9 +35,9 @@ class DenseModel:
             import keras
             weight_constraint = keras.constraints.MinMaxNorm(min_value=0.0, max_value=1.0, rate=1.0, axis=0)
             model = Sequential()
-            # model.add(Dense(252, activation='relu', use_bias=False, input_shape=(27,)))
+            model.add(Dense(18, activation='relu', use_bias=False, input_shape=(27,)))
             # model.add(Dense(72, activation='relu', use_bias=False))
-            model.add(Dense(9, activation='softmax', use_bias=False, input_shape=(27,)))
+            model.add(Dense(9, activation='softmax', use_bias=False))
         model.compile(loss='mean_squared_error', optimizer='Adam', metrics=['accuracy'])
         return model
 

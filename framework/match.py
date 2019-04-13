@@ -1,7 +1,7 @@
 import copy
 import random
 
-from NeuralNetworks.TicTacToe.framework.frame import Frame
+from framework.frame import Frame
 
 
 class Match:

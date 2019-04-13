@@ -1,6 +1,6 @@
 import re
 
-from NeuralNetworks.TicTacToe.players import Player
+from players import Player
 
 
 class HumanPlayer(Player):
