@@ -5,6 +5,7 @@ from players.convolutional import ConvolutionalPlayer
 from players.dense import DenseNetworkPlayer
 from players.human import HumanPlayer
 from players.random import RandomPlayer
+from players.reinforced import ReinforcedPlayer
 from players.static import PerfectPlayer
 
 
@@ -85,7 +86,8 @@ class TicTacToe:
 
         game = Game(
             # ConvolutionalPlayer('Conv_1', Frame.X),
-            DenseNetworkPlayer('Dense_1', Frame.X),
+            # DenseNetworkPlayer('Dense_1', Frame.X),
+            ReinforcedPlayer('Reinforced_1', Frame.X),
             # DenseNetworkPlayer('Dense_1', Frame.O)
             RandomPlayer('Random', Frame.O)
             # PerfectPlayer('Static', Frame.O)
@@ -96,10 +98,10 @@ class TicTacToe:
 
         dense_player = game.player_1
 
-        for i in range(100):
-            game.start(1)
+        for i in range(1):
+            game.start(2)
             data_manager.enqueue(game.matches)
-            dense_player.model.train(100, data_manager)
+            # dense_player.model.train(100, data_manager)
             game.matches.clear()
             game.swap_players()
 

@@ -15,7 +15,8 @@ class Player(metaclass=ABCMeta):
     def get_positions(self, frame):
         pass
 
-    def get_character(self, character):
+    @staticmethod
+    def get_character(character):
         if character is None:
             while True:
                 character = input('Enter player 1 character (X or O): ').upper()

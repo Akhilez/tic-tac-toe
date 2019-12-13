@@ -11,7 +11,7 @@ from framework.data_manager import DataManager
 from framework.frame import Frame
 
 
-class DenseModel:
+class ReinforcedModel:
 
     def __init__(self, model_name):
         self.name = model_name
@@ -19,10 +19,14 @@ class DenseModel:
         self.model = self.get_model()
 
     def train(self, epochs=250, data_manager=None):
-        data_manager = data_manager if data_manager else DataManager()
+        data_manager = data_manager if data_manager else DataManager(file_name=f'{os.curdir}/../data.json')
         matches = data_manager.get()
-        x_train, x_test, y_train, y_test = self.get_inputs_and_outputs(matches)
-        self.model.fit(x_train, y_train, batch_size=128, epochs=epochs, verbose=1, validation_data=(x_test, y_test))
+        for match in matches:
+            lr = 0.1
+            inputs, outputs = self.get_inputs_and_outputs([match])
+            for i in range(len(inputs)-1, 0, -1):
+                self.model.fit(inputs[i], outputs[i], epochs=epochs, verbose=1)
+                lr = lr * 0.5
         self.model.save(self.model_path)
 
     def get_model(self):
@@ -32,27 +36,26 @@ class DenseModel:
             print("model found at " + self.model_path)
         else:
             print("model not found!")
-            import keras
-            weight_constraint = keras.constraints.MinMaxNorm(min_value=0.0, max_value=1.0, rate=1.0, axis=0)
             model = Sequential()
-            model.add(Dense(18, activation='relu', use_bias=False, input_shape=(27,)))
-            # model.add(Dense(72, activation='relu', use_bias=False))
-            model.add(Dense(9, activation='softmax', use_bias=False))
-        model.compile(loss='mean_squared_error', optimizer='Adam', metrics=['accuracy'])
+            model.add(Dense(9, activation='sigmoid', input_shape=(27,)))
+            model.add(Dense(9, activation='softmax'))
+        model.compile(loss='categorical_crossentropy', optimizer='SGD', metrics=['accuracy'])
         return model
 
-    def get_inputs_and_outputs(self, matches):
+    @staticmethod
+    def get_inputs_and_outputs(matches):
         inputs = []
         outputs = []
         for match in matches:
-            for insert in match['inserts']:
-                inputs.append(Frame.categorize_inputs(insert['frame']))
-                outputs.append(insert['position'])
+            if match['winner'] == Frame.X:  # MAKING AN ASSUMPTION THAT Reinforced Player is X
+                for insert in match['inserts']:
+                    inputs.append(Frame.categorize_inputs(insert['frame']))
+                    outputs.append(insert['position'])
         outputs = np.array(Frame.categorize_outputs(outputs))
         inputs = np.array(inputs).reshape(len(inputs), 27)
 
-        return train_test_split(inputs, outputs, test_size=0.2)
+        return inputs, outputs
 
 
 if __name__ == '__main__':
-    DenseModel('Dense_1').train()
+    ReinforcedModel('Reinforced_1').train()

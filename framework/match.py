@@ -43,7 +43,7 @@ class Match:
             winner.score += 1
 
     def summary(self):
-        successful_inserts = self.get_best_inserts()
+        successful_inserts = self.get_all_inserts()  # self.get_best_inserts()
         # successful_inserts = self.remove_current_character_attribute(successful_inserts)
         return {
             'inserts': successful_inserts,
@@ -68,6 +68,15 @@ class Match:
                 new_insert['best'] = False
             best_inserts.append(new_insert)
         return best_inserts
+
+    def get_all_inserts(self):
+        all_inserts = []
+        for insert in self.inserts:
+            frame = Frame.flip(insert['frame']) if insert['current'] == Frame.O else copy.deepcopy(insert['frame'])
+            new_insert = copy.deepcopy(insert)
+            new_insert['frame'] = frame
+            all_inserts.append(new_insert)
+        return all_inserts
 
     @staticmethod
     def print_winner(winner):

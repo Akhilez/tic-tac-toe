@@ -1,0 +1,36 @@
+import numpy as np
+from players import Player
+from framework.frame import Frame
+from models.reinforced import ReinforcedModel
+from players.random import RandomPlayer
+
+
+class ReinforcedPlayer(Player):
+
+    TYPE = 'reinforced'
+
+    def __init__(self, name, character=None):
+        super().__init__(name, character)
+        self.model = ReinforcedModel(self.name)
+
+    def get_positions(self, frame):
+        if self.flip():
+            return RandomPlayer.get_random_position(frame.matrix)
+        frame = frame.matrix if self.character == Frame.X else Frame.flip(frame.matrix)
+        processed_frame = np.array([Frame.categorize_inputs(frame)]).reshape(1, 27)
+        output = self.model.model.predict(processed_frame)[0]
+        output = self.get_max(output, frame)
+        return [int(output // 3), int(output % 3)]
+
+    @staticmethod
+    def flip():
+        return bool(np.random.randint(2))
+
+    @staticmethod
+    def get_max(output, frame):
+        while True:
+            max_index = output.argmax()
+            indices = [max_index // 3, max_index % 3]
+            if frame[indices[0]][indices[1]] is None:
+                return max_index
+            output[max_index] = -1

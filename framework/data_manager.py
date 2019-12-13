@@ -19,13 +19,10 @@ class DataManager:
 
     def get(self):
         if self.data is None:
-            try:
-                with open(self.file_name, 'r') as data:
-                    data_string = data.read()
-                    if len(data_string) > 0:
-                        self.data = json.loads(data_string)['matches']
-            except:
-                pass
+            with open(self.file_name, 'r') as data:
+                data_string = data.read()
+                if len(data_string) > 0:
+                    self.data = json.loads(data_string)['matches']
         return self.data
 
     def clear(self):
