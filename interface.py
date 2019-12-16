@@ -98,10 +98,10 @@ class TicTacToe:
 
         dense_player = game.player_1
 
-        for i in range(1):
-            game.start(2)
+        for i in range(10):
+            game.start(10)
             data_manager.enqueue(game.matches)
-            # dense_player.model.train(100, data_manager)
+            dense_player.model.train(100, data_manager)
             game.matches.clear()
             game.swap_players()
 

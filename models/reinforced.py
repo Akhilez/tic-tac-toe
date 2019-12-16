@@ -21,12 +21,8 @@ class ReinforcedModel:
     def train(self, epochs=250, data_manager=None):
         data_manager = data_manager if data_manager else DataManager(file_name=f'{os.curdir}/../data.json')
         matches = data_manager.get()
-        for match in matches:
-            lr = 0.1
-            inputs, outputs = self.get_inputs_and_outputs([match])
-            for i in range(len(inputs)-1, 0, -1):
-                self.model.fit(inputs[i], outputs[i], epochs=epochs, verbose=1)
-                lr = lr * 0.5
+        inputs, outputs = self.get_inputs_and_outputs(matches)
+        self.model.fit(inputs, outputs, epochs=epochs, verbose=1)
         self.model.save(self.model_path)
 
     def get_model(self):
@@ -39,7 +35,7 @@ class ReinforcedModel:
             model = Sequential()
             model.add(Dense(9, activation='sigmoid', input_shape=(27,)))
             model.add(Dense(9, activation='softmax'))
-        model.compile(loss='categorical_crossentropy', optimizer='SGD', metrics=['accuracy'])
+        model.compile(loss='categorical_crossentropy', optimizer='Adam', metrics=['accuracy'])
         return model
 
     @staticmethod
@@ -47,6 +43,7 @@ class ReinforcedModel:
         inputs = []
         outputs = []
         for match in matches:
+
             if match['winner'] == Frame.X:  # MAKING AN ASSUMPTION THAT Reinforced Player is X
                 for insert in match['inserts']:
                     inputs.append(Frame.categorize_inputs(insert['frame']))
