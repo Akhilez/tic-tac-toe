@@ -1,6 +1,7 @@
 data.json
 *.h5
 .idea/
+venv/
 
 temp/
 
