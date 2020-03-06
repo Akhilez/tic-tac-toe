@@ -2,7 +2,7 @@ data.json
 *.h5
 .idea/
 venv/
-
+data/
 temp/
 
 # Byte-compiled / optimized / DLL files

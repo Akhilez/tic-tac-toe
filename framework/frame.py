@@ -1,7 +1,5 @@
 import copy
 
-from keras.utils import to_categorical
-
 
 class Frame:
     X = 'X'
@@ -93,4 +91,16 @@ class Frame:
         cat_list = []
         for lst in my_list:
             cat_list.append(lst[0] * 3 + lst[1])
-        return to_categorical(cat_list, 9)
+        return Frame.to_one_hot(cat_list)
+
+    @staticmethod
+    def to_one_hot(array):
+        """
+        :param array: like [1, 0, 3]
+        :return: [[0, 1, 0, 0], [1, 0, 0, 0], [0, 0, 0, 1]]
+        """
+        import numpy as np
+        a = np.array(array)
+        b = np.zeros((a.size, a.max() + 1))
+        b[np.arange(a.size), a] = 1
+        return b
