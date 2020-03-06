@@ -74,9 +74,9 @@ class Match:
     def get_all_inserts(self):
         all_inserts = []
         for insert in self.inserts:
-            frame = Frame.flip(insert['frame']) if insert['current'] == Frame.O else copy.deepcopy(insert['frame'])
+            # frame = Frame.flip(insert['frame']) if insert['current'] == Frame.O else copy.deepcopy(insert['frame'])
             new_insert = copy.deepcopy(insert)
-            new_insert['frame'] = frame
+            # new_insert['frame'] = frame
             all_inserts.append(new_insert)
         return all_inserts
 

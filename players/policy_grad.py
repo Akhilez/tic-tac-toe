@@ -1,3 +1,5 @@
+import copy
+
 import numpy as np
 import torch
 import os
@@ -27,7 +29,18 @@ class PolicyGradPlayer(Player):
         return [int(output // 3), int(output % 3)]
 
     def train(self, epochs, data_manager):
+        """
+        For each match in data_manager.data:
+            Get all inserts of the winner.
+            Create a mini-batch.
+            Create y from position.
+            train.
+        """
         self.clear_grads()
+        for match in data_manager.data:
+            x, y = self.get_mini_batch(match)
+            y_hat = self.forward(x)
+            self.backward(y, y_hat)
 
     def forward(self, x):
         self.clear_grads()
@@ -43,6 +56,21 @@ class PolicyGradPlayer(Player):
         self.biases_1 = self.biases_1 - learning_rates.T * self.biases_1.grad
 
         self.clear_grads()
+
+    def get_mini_batch(self, match):
+        """
+        :param match: dict of inserts[current, position, frame], winner and id
+        """
+        x, y = [], []
+        match = copy.deepcopy(match)
+        inserts = match['inserts']
+        winner_character = match['winner']
+        winners_inserts = [insert for insert in inserts if insert['current'] == winner_character]
+        if winner_character == Frame.O:
+            for insert in winners_inserts:
+                x.append(self.get_one_hot_frame(Frame.flip(insert['frame'])))
+                y.append(self.get_one_hot_position(insert['position'][0], insert['position'][1]))
+        return torch.tensor(x), torch.tensor(y)
 
     def clear_grads(self):
         self.weights_1 = self.weights_1.detach().requries_grad_()
@@ -61,6 +89,11 @@ class PolicyGradPlayer(Player):
             return torch.load(biases_path)
         else:
             return self.get_new_weights(shape)
+
+    def save_params(self):
+        os.makedirs(f'data/{self.name}', exist_ok=True)
+        torch.save(self.weights_1, f'data/{self.name}/weights_1.pt')
+        torch.save(self.biases_1, f'data/{self.name}/biases_1.pt')
 
     @staticmethod
     def get_new_weights(shape):
@@ -87,6 +120,12 @@ class PolicyGradPlayer(Player):
     @staticmethod
     def get_one_hot_frame(frame):
         return torch.tensor(Frame.categorize_inputs(frame)).reshape(1, 27)
+
+    @staticmethod
+    def get_one_hot_position(i, j):
+        position = torch.zeros(9)
+        position[i*3 + j] = 1
+        return position
 
     @staticmethod
     def get_max_index(output, frame):
