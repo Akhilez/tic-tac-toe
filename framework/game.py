@@ -2,7 +2,6 @@ from framework.match import Match
 
 
 class Game:
-    num_matches = 0
 
     def __init__(self, player1, player2):
         """
@@ -12,24 +11,26 @@ class Game:
         self.player_1, self.player_2 = player1, player2
         self.matches = []
         self.current_match = None
+        self.num_matches = 0
 
-    def start(self, epocs=None):
-        while epocs is None or epocs > 0:
-            match = Match(self.player_1, self.player_2, Game.num_matches)
+    def start(self, epochs=None):
+        while epochs is None or epochs > 0:
+            match = Match(self.player_1, self.player_2, self.num_matches)
             self.current_match = match
+
             match.start()
-            Game.num_matches += 1
+            self.num_matches += 1
+
             self.print_scores()
             match_summary = match.summary()
             self.matches.append(match_summary)
-            if epocs is None:
-                if self.choose_to_replay():
-                    continue
-                else:
+
+            if epochs is None:
+                if not self.choose_to_replay():
                     print("Closing the game. Bye!")
-                    epocs = 0
+                    epochs = 0
             else:
-                epocs -= 1
+                epochs -= 1
 
     @staticmethod
     def choose_to_replay():

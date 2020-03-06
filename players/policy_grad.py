@@ -13,6 +13,9 @@ class PolicyGradPlayer(Player):
     def get_positions(self, frame):
         pass
 
+    def train(self, epochs, data_manager):
+        pass
+
     @staticmethod
     def get_character(character):
         return super().get_character(character)

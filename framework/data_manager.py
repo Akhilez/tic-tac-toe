@@ -3,7 +3,7 @@ import json
 
 class DataManager:
 
-    def __init__(self, file_name='data.json', max_size=10):
+    def __init__(self, file_name='data/data.json', max_size=100):
         self.file_name = file_name
         self.max_size = max_size
         self.data = None
