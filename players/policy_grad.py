@@ -1,7 +1,10 @@
 import numpy as np
 import torch
 import os
+
+from framework.frame import Frame
 from players import Player
+from players.random import RandomPlayer
 
 
 class PolicyGradPlayer(Player):
@@ -13,11 +16,18 @@ class PolicyGradPlayer(Player):
         self.biases_1 = self.load_biases_1(shape=9)
 
     def get_positions(self, frame):
-        pass
+        if self.flip():
+            return RandomPlayer.get_random_position(frame.matrix)
+        frame = frame.matrix if self.character == Frame.X else Frame.flip(frame.matrix)
+        frame_one_hot = self.get_one_hot_frame(frame)
+
+        position_one_hot = self.forward(frame_one_hot)
+
+        output = self.get_max_index(position_one_hot[0], frame)
+        return [int(output // 3), int(output % 3)]
 
     def train(self, epochs, data_manager):
-
-        pass
+        self.clear_grads()
 
     def forward(self, x):
         self.clear_grads()
@@ -69,3 +79,23 @@ class PolicyGradPlayer(Player):
             lr = lr * decay
         lrs.reverse()
         return torch.tensor([lrs]).T
+
+    @staticmethod
+    def flip():
+        return bool(np.random.randint(2))
+
+    @staticmethod
+    def get_one_hot_frame(frame):
+        return torch.tensor(Frame.categorize_inputs(frame)).reshape(1, 27)
+
+    @staticmethod
+    def get_max_index(output, frame):
+        i = 0
+        while i < len(output):
+            i += 1
+            max_index = output.argmax()
+            indices = [max_index // 3, max_index % 3]
+            if frame[indices[0]][indices[1]] is None:
+                return max_index
+            output[max_index] = -1
+        return -1
