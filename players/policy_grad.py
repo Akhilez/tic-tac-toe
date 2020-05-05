@@ -7,6 +7,10 @@ import os
 from framework.frame import Frame
 from players import Player
 from players.random import RandomPlayer
+from sklearn.metrics import confusion_matrix, accuracy_score
+
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 class PolicyGradPlayer(Player):
@@ -14,11 +18,13 @@ class PolicyGradPlayer(Player):
 
     def __init__(self, name, character=None):
         super().__init__(name, character)
-        self.weights_1 = self.load_params('weights_1', shape=(56, 27))
-        self.biases_1 = self.load_params('biases_1', shape=56)
+        self.weights_1 = self.load_params('weights_1', shape=(56, 27)).to(device)
+        self.biases_1 = self.load_params('biases_1', shape=56).to(device)
 
-        self.weights_2 = self.load_params('weights_2', shape=(9, 56))
-        self.biases_2 = self.load_params('biases_2', shape=9)
+        self.weights_2 = self.load_params('weights_2', shape=(9, 56)).to(device)
+        self.biases_2 = self.load_params('biases_2', shape=9).to(device)
+
+        self.model = self
 
     def get_positions(self, frame):
         if self.flip():
@@ -54,8 +60,10 @@ class PolicyGradPlayer(Player):
         loss = torch.nn.functional.binary_cross_entropy(y_hat, y)
         loss.backward()
 
-        learning_rates_1 = self.get_dynamic_learning_rates(len(self.weights_1.grad))
-        learning_rates_2 = self.get_dynamic_learning_rates(len(self.weights_2.grad))
+        # print(f'\n---\nReal y = {y}\ny_hat = {y_hat}')
+
+        learning_rates_1 = self.get_dynamic_learning_rates(len(self.weights_1.grad), initial=0.5, decay=0.99)
+        learning_rates_2 = self.get_dynamic_learning_rates(len(self.weights_2.grad), initial=0.5, decay=0.99)
 
         self.weights_1 = self.weights_1 - learning_rates_1 * self.weights_1.grad
         self.biases_1 = self.biases_1 - learning_rates_1.T * self.biases_1.grad
@@ -80,7 +88,7 @@ class PolicyGradPlayer(Player):
         for insert in winners_inserts:
             x.append(self.get_one_hot_frame(insert['frame']).reshape(27))
             y.append(self.get_one_hot_position(insert['position'][0], insert['position'][1]))
-        return torch.stack(x), torch.stack(y)
+        return torch.stack(x).to(device), torch.stack(y).to(device)
 
     def clear_grads(self):
         self.weights_1 = self.weights_1.detach().requires_grad_()
@@ -91,9 +99,35 @@ class PolicyGradPlayer(Player):
     def load_params(self, name, shape):
         weights_1_path = f'data/{self.name}/{name}.pt'
         if os.path.exists(weights_1_path):
+            print(f"Loaded {name} parameters successfully")
             return torch.load(weights_1_path)
         else:
             return self.get_new_weights(shape)
+
+    def show_confusion_matrix(self, data_manager):
+        """
+        For all the matches in the dataset, gimme the real real y and predicted y
+
+        :return:
+        """
+        print("Confusion matrix")
+        with torch.no_grad():
+            real_ys = []
+            predicted_ys = []
+            for match in data_manager.data:
+                if match['winner'] is not None:
+                    x, y = self.get_mini_batch(match)
+                    y_hat = self.forward(x)
+                    for i in range(len(y_hat)):
+                        y_hat_argmax = int(self.get_max_index(y_hat[i], match['inserts'][i]['frame']))
+                        y_argmax = int(self.get_max_index(y[i], match['inserts'][i]['frame']))
+                        real_ys.append(y_argmax)
+                        predicted_ys.append(y_hat_argmax)
+            matrix = confusion_matrix(real_ys, predicted_ys)
+            print(matrix)
+            accuracy = accuracy_score(real_ys, predicted_ys)
+            print(f'Accuracy: {accuracy}')
+
 
     def save_params(self):
         os.makedirs(f'data/{self.name}', exist_ok=True)
@@ -111,14 +145,14 @@ class PolicyGradPlayer(Player):
         return scaled_tensor
 
     @staticmethod
-    def get_dynamic_learning_rates(length, initial=0.1, decay=0.8):
+    def get_dynamic_learning_rates(length, initial=0.5, decay=0.8):
         lrs = []
         lr = initial
         for i in range(length):
             lrs.append(lr)
             lr = lr * decay
-        lrs.reverse()
-        return torch.tensor([lrs]).T
+        # lrs.reverse()
+        return torch.tensor([lrs]).T.to(device)
 
     @staticmethod
     def flip():
@@ -127,7 +161,7 @@ class PolicyGradPlayer(Player):
 
     @staticmethod
     def get_one_hot_frame(frame):
-        return torch.tensor(Frame.categorize_inputs(frame), dtype=torch.float32).reshape(1, 27)
+        return torch.tensor(Frame.categorize_inputs(frame), dtype=torch.float32).reshape(1, 27).to(device)
 
     @staticmethod
     def get_one_hot_position(i, j):

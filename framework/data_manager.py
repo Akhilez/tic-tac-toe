@@ -1,4 +1,5 @@
 import json
+import os
 
 
 class DataManager:
@@ -19,10 +20,13 @@ class DataManager:
 
     def get(self):
         if self.data is None:
-            with open(self.file_name, 'r') as data:
-                data_string = data.read()
-                if len(data_string) > 0:
-                    self.data = json.loads(data_string)['matches']
+            if os.path.exists(self.file_name):
+                with open(self.file_name, 'r') as data:
+                    data_string = data.read()
+                    if len(data_string) > 0:
+                        self.data = json.loads(data_string)['matches']
+            else:
+                print(f"Path {self.file_name} does not exist")
         return self.data
 
     def clear(self):

@@ -36,5 +36,5 @@ There next design was to let perfect player and ann play and train for 1000 matc
 pending
 
 TODO
-  - Focus on parsing the weights from output to inputs.
-  - Consider negative weights
+  - Only take model's inserts into the dataset.
+  - Add a negative gradient to lost matches.

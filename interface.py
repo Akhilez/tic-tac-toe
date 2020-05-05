@@ -1,11 +1,11 @@
 from framework.data_manager import DataManager
 from framework.frame import Frame
 from framework.game import Game
-from players.convolutional import ConvolutionalPlayer
-from players.dense import DenseNetworkPlayer
+# from players.dense import DenseNetworkPlayer
 from players.human import HumanPlayer
+from players.policy_grad import PolicyGradPlayer
 from players.random import RandomPlayer
-from players.reinforced import ReinforcedPlayer
+# from players.reinforced import ReinforcedPlayer
 from players.static import PerfectPlayer
 
 
@@ -56,28 +56,28 @@ class TicTacToe:
 
         return Game(player1, player2)
 
-    @staticmethod
-    def get_player(player_type, player_name, player_character):
-        if player_type == HumanPlayer.TYPE:
-            return HumanPlayer(player_name, player_character)
-        if player_type == RandomPlayer.TYPE:
-            return RandomPlayer(player_name, player_character)
-        if player_type == DenseNetworkPlayer.TYPE:
-            return DenseNetworkPlayer(player_name, player_character)
-        if player_type == PerfectPlayer.TYPE:
-            return PerfectPlayer(player_name, player_character)
-        if player_type == ConvolutionalPlayer.TYPE:
-            return ConvolutionalPlayer(player_name, player_character)
-        raise Exception(f"Player type {player_type} not found!")
+    # @staticmethod
+    # def get_player(player_type, player_name, player_character):
+    #     if player_type == HumanPlayer.TYPE:
+    #         return HumanPlayer(player_name, player_character)
+    #     if player_type == RandomPlayer.TYPE:
+    #         return RandomPlayer(player_name, player_character)
+    #     if player_type == DenseNetworkPlayer.TYPE:
+    #         return DenseNetworkPlayer(player_name, player_character)
+    #     if player_type == PerfectPlayer.TYPE:
+    #         return PerfectPlayer(player_name, player_character)
+    #     if player_type == ConvolutionalPlayer.TYPE:
+    #         return ConvolutionalPlayer(player_name, player_character)
+    #     raise Exception(f"Player type {player_type} not found!")
 
-    @staticmethod
-    def read_player_type():
-        while True:
-            character = input('\n1. Human\n2. Randon\n3. Dense\nEnter the player type: ')
-            if character not in '123':
-                print("Wrong input")
-            else:
-                return {'1': HumanPlayer.TYPE, '2': RandomPlayer.TYPE, '3': DenseNetworkPlayer.TYPE}[character]
+    # @staticmethod
+    # def read_player_type():
+    #     while True:
+    #         character = input('\n1. Human\n2. Randon\n3. Dense\nEnter the player type: ')
+    #         if character not in '123':
+    #             print("Wrong input")
+    #         else:
+    #             return {'1': HumanPlayer.TYPE, '2': RandomPlayer.TYPE, '3': DenseNetworkPlayer.TYPE}[character]
 
     @staticmethod
     def keep_dense_learning():
@@ -87,7 +87,8 @@ class TicTacToe:
         game = Game(
             # ConvolutionalPlayer('Conv_1', Frame.X),
             # DenseNetworkPlayer('Dense_1', Frame.X),
-            ReinforcedPlayer('Reinforced_1', Frame.X),
+            # ReinforcedPlayer('Reinforced_1', Frame.X),
+            PolicyGradPlayer('PolicyGrad', Frame.X),
             # DenseNetworkPlayer('Dense_1', Frame.O)
             RandomPlayer('Random', Frame.O)
             # PerfectPlayer('Static', Frame.O)
@@ -98,10 +99,10 @@ class TicTacToe:
 
         dense_player = game.player_1
 
-        for i in range(10):
+        for i in range(1):
             game.start(10)
             data_manager.enqueue(game.matches)
-            dense_player.model.train(100, data_manager)
+            dense_player.model.train(10, data_manager)
             game.matches.clear()
             game.swap_players()
 
